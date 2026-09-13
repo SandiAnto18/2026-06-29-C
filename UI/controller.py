@@ -23,7 +23,42 @@ class Controller:
         self._view.update_page()
 
     def handleStampaInfo(self,e):
-        pass
+
+            # PULISCO L'AREA DEI RISULTATI
+            self._view._txt_result.controls.clear()
+
+            # ARTISTA CON GRADO MAGGIORE
+            artistDegree,grado = self._model.getArtistMaxDegree()
+            self._view._txt_result.controls.append(
+                ft.Text(f"ARTISTA CON GRADO MAGGIORE: {artistDegree} (grado: {grado})")
+
+            )
+
+            # ARTISTA CON SOMMA DEI PESI INCIDENTI MASSIMA
+            artistWeight,somma = self._model.getArtistMaxWeight()
+
+            self._view._txt_result.controls.append(
+                ft.Text(f"ARTISTA CON SOMMA DEI PESI INCIDENTI MASSIMA: {artistWeight}(somma:{somma})")
+            )
+
+            # TOP 10 ARCHI DI PESO MAGGIORE
+            topEdges = self._model.getTop10Edges()
+            self._view._txt_result.controls.append(
+                ft.Text("TOP 10 ARCHI DI PESO MAGGIORE:")
+            )
+
+            # STAMPO I 10 ARCHI senza numerazione(1. ... 2. ...)
+            #for artist1, artist2, data in topEdges:
+            #    self._view._txt_result.controls.append(
+            #        ft.Text(f"{artist1} -- {artist2} (peso: {data["weight"]})")
+            #    )
+            # STAMPO I 10 ARCHI con numerazione
+            for i, (artist1, artist2, data) in enumerate(topEdges, start=1):
+                self._view._txt_result.controls.append(
+                    ft.Text(f"{i}. {artist1} -- {artist2}: (peso = {data['weight']})")
+                )
+
+            self._view.update_page()
 
     def handleSelezione(self,e):
         pass
