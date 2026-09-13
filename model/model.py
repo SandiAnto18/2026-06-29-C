@@ -13,36 +13,31 @@ class Model:
 # dell'arco	è	pari	al	numero	di	playlist	distinte	in	comune	tra	i	due	artisti.
 
     def buildGraph(self):
-        artists=DAO.getAllArtists()
-        for artist in artists:
-            DAO.getTracksforArtist(artist)
+        # RECUPERO TUTTI GLI ARTISTI CHE HANNO ALMENO UN BRANO
+        artists = DAO.getAllArtists()
+
+        # AGGIUNGO GLI ARTISTI COME VERTICI DEL GRAFO
         self._graph.add_nodes_from(artists)
 
-        for i, artist1 in enumerate(artists):  # scorre la lista albums e restituisce la posizione i e il suo ogg.album
-            # album1 [i=0 a1,i=1 a2, i=2 a3]
-            # il 2do for prende solo gli album successivi alla posizone i e crea gli archi tra le coppie, senza duplicati
-            for artist2 in artists[i + 1:]:  # album2 scorre gli album che vengono dopo quell'indice
-                # così non paragoni un album con se stesso e non ripeti coppie al contrario.
-                if self._sharePlaylist(artist1, artist2):  # se _shareGenre diche che condividono un genere
-                    self._graph.add_edge(artist1, artist2)  # al
+        # CONFRONTO OGNI ARTISTA CON GLI ARTISTI SUCCESSIVI
+        for i, artist1 in enumerate(artists):
+            for artist2 in artists[i + 1:]:
 
+                # RECUPERO LE PLAYLIST DELL'ARTISTA 1
+                playlist1 = set(DAO.getPlaylistsforArtist(artist1))
 
-    def _sharePlaylist(self,artist1,artist2):
-        if artist1.Tracks is None or artist2.Tracks is None: #insieme di brani non vuota
-            return False
-    #verifico se hanno una playlist incomune
-        playlist1=set(playlist.PlaylistId for playlist in artist1.Playlist if playlist.PlaylistId is not None )
-        playlist2=set(playlist.PlaylistId for playlist in artist2.Playlist if playlist.PlaylistId is not None )
-   #verifico intersezione tra le playlist
-        return len(playlist1.intersection(playlist2)) > 0
+                # RECUPERO LE PLAYLIST DELL'ARTISTA 2
+                playlist2 = set(DAO.getPlaylistsforArtist(artist2))
 
+                # TROVO LE PLAYLIST PRESENTI IN ENTRAMBI GLI ARTISTI
+                comuni = playlist1.intersection(playlist2)
 
+                # IL PESO È IL NUMERO DI PLAYLIST DISTINTE IN COMUNE
+                peso = len(comuni)
 
-
-
-
-
-
+                # SE ESISTE ALMENO UNA PLAYLIST IN COMUNE, CREO L'ARCO
+                if peso > 0:
+                    self._graph.add_edge(artist1, artist2, weight=peso)
 
 
     def getNodes(self):
